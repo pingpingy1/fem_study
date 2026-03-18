@@ -1,0 +1,80 @@
++ time python3 format_xyz.py
+0.03user 0.01system 0:00.05elapsed 98%CPU (0avgtext+0avgdata 9336maxresident)k
+0inputs+40outputs (0major+995minor)pagefaults 0swaps
+
+
+
++ time ./tetgen -cq1.2/10 nodes
+Opening nodes.node.
+Delaunizing vertices...
+Delaunay seconds:  0.008106
+Creating surface mesh ...
+Surface mesh seconds:  4.4e-05
+Recovering boundaries...
+Boundary recovery seconds:  2.4e-05
+Marking exterior tetrahedra ...
+Spreading region attributes.
+Exterior tets removal seconds:  0.000609
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.004742
+Refining mesh...
+Refinement seconds:  0.000674
+Improving mesh...
+Mesh improvement seconds:  8.3e-05
+
+Writing nodes.1.node.
+Writing nodes.1.ele.
+Writing nodes.1.edge.
+
+Output seconds:  0.008852
+Total running seconds:  0.023443
+
+Statistics:
+
+  Input points: 630
+  Input facets: 0
+  Input segments: 0
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 630
+  Mesh tetrahedra: 4147
+  Mesh faces: 8350
+  Mesh edges: 4832
+  Mesh faces on exterior boundary: 112
+  Mesh faces on input facets: 0
+  Mesh edges on input segments: 0
+
+0.01user 0.01system 0:00.02elapsed 96%CPU (0avgtext+0avgdata 6124maxresident)k
+0inputs+400outputs (0major+636minor)pagefaults 0swaps
+
+
+
++ time gcc -o hamiltonian hamiltonian.c
+0.11user 0.03system 0:00.15elapsed 99%CPU (0avgtext+0avgdata 24968maxresident)k
+0inputs+200outputs (0major+4895minor)pagefaults 0swaps
+
+
+
++ time ./hamiltonian
+Read 630 internal and 0 boundary nodes
+First node: (0.0991, 1.2941, 0.6620) (Interior)
+Read 4147 tetrahedra
+First tetrahedron: (130, 141, 137, 127)
+Volume of first tetrahedron: 1.3137
+Center of first tetrahedron: (13.8834, 4.1702, 7.1324)
+Gradient components:
+\nabla\phi_0 = (-0.3757, 0.3776, 0.1144)
+\nabla\phi_1 = (0.4546, 0.2022, -0.2166)
+\nabla\phi_2 = (0.6418, -0.2870, 0.2745)
+\nabla\phi_3 = (-0.7208, -0.2928, -0.1723)
+0.05user 0.00system 0:00.06elapsed 98%CPU (0avgtext+0avgdata 4860maxresident)k
+0inputs+1112outputs (0major+886minor)pagefaults 0swaps
+
+
+
++ time python3 solver.py
+[-8.58297069e-12  2.80247012e-03  9.44857673e-02  1.05477065e-01
+  1.06857682e-01]
+23.78user 0.09system 0:23.61elapsed 101%CPU (0avgtext+0avgdata 80236maxresident)k
+0inputs+8outputs (0major+12899minor)pagefaults 0swaps

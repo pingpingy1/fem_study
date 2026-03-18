@@ -61,8 +61,6 @@ struct Node *read_nodes(const char *filename, int *N_node, int *N_bdry) {
     int read_res = fscanf(f, "%d %d %d %d", &N_tot, &dim, &attr, &bdry_markers);
     assert(read_res == 4);
     assert(dim == 3);
-    assert(attr == 0);
-    assert(bdry_markers == 1);
 
     *N_node = 0;
     *N_bdry = 0;
@@ -73,12 +71,20 @@ struct Node *read_nodes(const char *filename, int *N_node, int *N_bdry) {
         int idx, bdry;
         double x, y, z;
 
-        read_res = fscanf(f, "%d %lf %lf %lf %d", &idx, &x, &y, &z, &bdry);
-        assert(read_res == 5);
+        if (bdry_markers) {
+            read_res = fscanf(f, "%d %lf %lf %lf %d", &idx, &x, &y, &z, &bdry);
+            assert(read_res == 5);
 
-        nodes[i] = (struct Node) {x, y, z, !!bdry};
-        if (bdry) *N_bdry += 1;
-        else *N_node += 1;
+            nodes[i] = (struct Node) {x, y, z, !!bdry};
+            if (bdry) *N_bdry += 1;
+            else *N_node += 1;
+        } else {
+            read_res = fscanf(f, "%d %lf %lf %lf", &idx, &x, &y, &z);
+            assert(read_res == 4);
+
+            nodes[i] = (struct Node) {x, y, z, 0};
+            *N_node += 1;
+        }
     }
 
     fclose(f);
@@ -93,22 +99,22 @@ struct Tetra *read_tetras(const char *filename, int *N_tetra, int N_tot) {
     int read_res = fscanf(f, "%d %d %d", N_tetra, &nodes_per_tet, &attr);
     assert(read_res == 3);
     assert(nodes_per_tet == 4);
-    assert(attr == 0);
 
     struct Tetra *tetras = malloc(*N_tetra * sizeof(struct Tetra));
     int i;
     
     for (i = 0; i < *N_tetra; ++i) {
-        int idx;
+        int idx, attr;
         
-        read_res = fscanf(f, "%d %d %d %d %d",
+        read_res = fscanf(f, "%d %d %d %d %d %d",
             &idx,
             &tetras[i].v[0],
             &tetras[i].v[1],
             &tetras[i].v[2],
-            &tetras[i].v[3]
+            &tetras[i].v[3],
+            &attr
         );
-        assert(read_res == 5);
+        assert(read_res == 6);
         
         int j;
         for (j = 0; j < 4; ++j) {
@@ -396,7 +402,7 @@ void print_matrix(struct CSR_Matrix m) {
 // =============================
 
 int main() {
-    struct Mesh mesh = read_mesh("nodes.1.node", "nodes.1.ele");
+    struct Mesh mesh = read_mesh("nodes/nodes.1.node", "nodes/nodes.1.ele");
     printf("Read %d internal and %d boundary nodes\n", mesh.N_node, mesh.N_bdry);
     printf("First node: (%6.4f, %6.4f, %6.4f) (%s)\n",
             mesh.nodes[0].x, mesh.nodes[0].y, mesh.nodes[0].z,
