@@ -3,3 +3,9 @@
 **/a.out
 **/triangulate
 **/hamiltonian
+**/*.node
+**/*.edge
+**/*.face
+**/*.ele
+**/*.poly
+**/*.csr
