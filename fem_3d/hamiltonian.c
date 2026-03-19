@@ -99,22 +99,22 @@ struct Tetra *read_tetras(const char *filename, int *N_tetra, int N_tot) {
     int read_res = fscanf(f, "%d %d %d", N_tetra, &nodes_per_tet, &attr);
     assert(read_res == 3);
     assert(nodes_per_tet == 4);
+    assert(attr == 0);
 
     struct Tetra *tetras = malloc(*N_tetra * sizeof(struct Tetra));
     int i;
     
     for (i = 0; i < *N_tetra; ++i) {
-        int idx, attr;
+        int idx;
         
-        read_res = fscanf(f, "%d %d %d %d %d %d",
+        read_res = fscanf(f, "%d %d %d %d %d",
             &idx,
             &tetras[i].v[0],
             &tetras[i].v[1],
             &tetras[i].v[2],
-            &tetras[i].v[3],
-            &attr
+            &tetras[i].v[3]
         );
-        assert(read_res == 6);
+        assert(read_res == 5);
         
         int j;
         for (j = 0; j < 4; ++j) {
