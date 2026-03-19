@@ -1,0 +1,60 @@
++ time python3 create_nodes.py
+0.06user 0.00system 0:00.07elapsed 98%CPU (0avgtext+0avgdata 10460maxresident)k
+0inputs+472outputs (0major+1265minor)pagefaults 0swaps
+
+
+
++ time ./tetgen -c nodes
+Opening nodes.node.
+Delaunizing vertices...
+Delaunay seconds:  0.637228
+
+Writing nodes.1.node.
+Writing nodes.1.ele.
+Writing nodes.1.face.
+
+Output seconds:  0.023494
+Total running seconds:  0.661475
+
+Statistics:
+
+  Input points: 6867
+
+  Mesh points: 6867
+  Mesh tetrahedra: 39108
+  Mesh faces: 78222
+  Mesh edges: 45980
+  Convex hull faces: 12
+
+0.65user 0.01system 0:00.66elapsed 100%CPU (0avgtext+0avgdata 13180maxresident)k
+0inputs+3304outputs (0major+2756minor)pagefaults 0swaps
+
+
+
++ time gcc -o hamiltonian hamiltonian.c
+0.10user 0.01system 0:00.11elapsed 100%CPU (0avgtext+0avgdata 24824maxresident)k
+0inputs+200outputs (0major+4879minor)pagefaults 0swaps
+
+
+
++ time ./hamiltonian
+Read 6867 internal and 0 boundary nodes
+First node: (0.0000, 0.0000, 0.0000) (Interior)
+Read 39108 tetrahedra
+First tetrahedron: (1179, 1180, 1541, 1560)
+Volume of first tetrahedron: 0.0000
+Center of first tetrahedron: (0.2250, 0.2625, 0.6375)
+Gradient components:
+\nabla\phi_0 = (0.0000, 0.0000, -20.0000)
+\nabla\phi_1 = (-20.0000, 0.0000, 20.0000)
+\nabla\phi_2 = (20.0000, -20.0000, 0.0000)
+\nabla\phi_3 = (0.0000, 20.0000, 0.0000)
+0.32user 0.01system 0:00.34elapsed 100%CPU (0avgtext+0avgdata 33156maxresident)k
+0inputs+10984outputs (0major+8226minor)pagefaults 0swaps
+
+
+
++ time python3 solver.py
+[ 74.71464048 125.41703596 125.41703596 125.54149239 167.01919722]
+179.31user 0.16system 2:59.28elapsed 100%CPU (0avgtext+0avgdata 136848maxresident)k
+0inputs+8outputs (0major+28457minor)pagefaults 0swaps
