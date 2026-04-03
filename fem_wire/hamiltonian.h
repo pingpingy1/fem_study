@@ -36,8 +36,9 @@ struct CSR_Matrix {
     struct CSR_Row *rows;
 };
 
+double COEFF_A = 1.0;
+
 double potential(struct Node p);
-double coeff_a(struct Node p);
 
 struct CSR_Matrix create_matrix(int N_node);
 void add_entry(struct CSR_Matrix *m, int row, int col, double val);
@@ -51,7 +52,7 @@ void free_mesh(struct Mesh mesh);
 double volume(struct Tetra t, struct Node *nodes);
 struct Node center(struct Tetra t, struct Node *nodes);
 
-struct CSR_Matrix mass(struct Mesh mesh);
+struct CSR_Matrix shape(struct Mesh mesh);
 void _compute_grad_coeff(double *b, double *c, double *d, struct Mesh mesh, int i);
 struct CSR_Matrix hamiltonian(struct Mesh mesh);
 

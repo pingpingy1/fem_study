@@ -8,10 +8,6 @@ double potential(struct Node p) {
     return 0.0;
 }
 
-double coeff_a(struct Node p) {
-    return 1.0;
-}
-
 // =============================
 
 struct CSR_Matrix create_matrix(int N_node) {
@@ -61,6 +57,8 @@ struct Node *read_nodes(const char *filename, int *N_node, int *N_bdry) {
     int read_res = fscanf(f, "%d %d %d %d", &N_tot, &dim, &attr, &bdry_markers);
     assert(read_res == 4);
     assert(dim == 3);
+    assert(attr == 0);
+    assert(bdry_markers == 1);
 
     *N_node = 0;
     *N_bdry = 0;
@@ -185,13 +183,13 @@ struct Node center(struct Tetra t, struct Node *nodes) {
 
 // =============================
 
-struct CSR_Matrix mass(struct Mesh mesh) {
-    // Creates the mass matrix:
-    // M_jk = \int dV \phi_j \phi_k
+struct CSR_Matrix shape(struct Mesh mesh) {
+    // Creates the shape matrix:
+    // S_jk = \int dV \phi_j \phi_k
     // For adjacent j and k,
     // \int_tetra dV \phi_j \phi_k = (j == k) ? 0.6V : 0.3V
 
-    struct CSR_Matrix m = create_matrix(mesh.N_node);
+    struct CSR_Matrix s = create_matrix(mesh.N_node);
 
     int i;
     for (i = 0; i < mesh.N_tetra; ++i) {
@@ -202,7 +200,7 @@ struct CSR_Matrix mass(struct Mesh mesh) {
                 if (!mesh.nodes[mesh.tetras[i].v[j]].is_bdry &&
                     !mesh.nodes[mesh.tetras[i].v[k]].is_bdry) {
                     add_entry(
-                        &m,
+                        &s,
                         mesh.node_to_idx[mesh.tetras[i].v[j]],
                         mesh.node_to_idx[mesh.tetras[i].v[k]],
                         (j == k) ? V / 10.0 : V / 20.0
@@ -212,7 +210,7 @@ struct CSR_Matrix mass(struct Mesh mesh) {
         }
     }
 
-    return m;
+    return s;
 }
 
 void _compute_grad_coeff(double *b, double *c, double *d, struct Mesh mesh, int ti) {
@@ -303,7 +301,7 @@ struct CSR_Matrix hamiltonian(struct Mesh mesh) {
                         &h,
                         mesh.node_to_idx[mesh.tetras[i].v[j]],
                         mesh.node_to_idx[mesh.tetras[i].v[k]],
-                        coeff_a(cen) * (b[j]*b[k] + c[j]*c[k] + d[j]*d[k]) * V +
+                        COEFF_A * (b[j]*b[k] + c[j]*c[k] + d[j]*d[k]) * V +
                         potential(cen) * ((j == k) ? V * 0.6 : V * 0.3)
                     );
 
@@ -320,7 +318,7 @@ struct CSR_Matrix hamiltonian(struct Mesh mesh) {
 int cmp_entry(const void *a, const void *b) {
     const struct CSR_Entry *ea = a;
     const struct CSR_Entry *eb = b;
-    return ea->col - eb-> col;
+    return ea->col - eb->col;
 }
 
 void sort_row(struct CSR_Row *r) {
@@ -428,10 +426,10 @@ int main() {
         printf("\\nabla\\phi_%d = (%6.4f, %6.4f, %6.4f)\n", i, b[i], c[i], d[i]);
     }
 
-    struct CSR_Matrix m = mass(mesh);
-    sort_matrix(&m);
-    // print_matrix(m);
-    fwrite_matrix("mass.csr", m);
+    struct CSR_Matrix s = shape(mesh);
+    sort_matrix(&s);
+    // print_matrix(s);
+    fwrite_matrix("shape.csr", s);
 
     struct CSR_Matrix h = hamiltonian(mesh);
     sort_matrix(&h);
@@ -439,7 +437,7 @@ int main() {
     fwrite_matrix("hamiltonian.csr", h);
 
     free_mesh(mesh);
-    free_matrix(m);
+    free_matrix(s);
     free_matrix(h);
     return 0;
 }
